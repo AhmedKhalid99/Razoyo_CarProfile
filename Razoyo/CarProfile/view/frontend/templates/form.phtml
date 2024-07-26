@@ -1,0 +1,129 @@
+<?php
+$carList = $block->getData('carList');
+$token = $block->getData('your-token');
+
+$makes = array_unique(array_column($carList, 'make'));
+?>
+<form id="carSelectionForm" class="form" action="<?= $block->getUrl('*/*/savecar'); ?>" method="post">   
+    <input type="hidden" name="car_list" id="car_list" value='<?php echo json_encode($carList); ?>'>
+    <input type="hidden" name="token" id="token" value='<?php echo $token; ?>'>
+
+    <div class="field required" style="margin-bottom: 15px;">
+        <label for="make">Choose a make:</label>
+        <select name="make" id="make" style="width: 100%; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="">Select a make</option>
+            <?php foreach ($makes as $make): ?>
+                <option value="<?php echo $make; ?>"><?php echo $make; ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="field required" style="margin-bottom: 15px;">
+        <label for="model">Choose a model:</label>
+        <select name="model" id="model" disabled style="width: 100%; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="">Select a model</option>
+        </select>
+    </div>
+
+    <div class="field required" style="margin-bottom: 15px;">
+        <label for="year">Choose a year:</label>
+        <select name="year" id="year" disabled style="width: 100%; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="">Select a year</option>
+        </select>
+    </div>
+
+    <div class="actions-toolbar"  style="margin-left: 0px">
+        <div class="primary">
+            <button type="submit" id="car-form-btn" class="action submit primary" title="<?php /* @escapeNotVerified */ echo __('Save Car') ?>" style="padding: 10px 20px; border-radius: 5px; background-color: #007bff; color: white; border: none;">
+                <span><?php /* @escapeNotVerified */ echo __('Save Car') ?></span>
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var carList = <?php echo json_encode($carList); ?>;
+    var makeSelect = document.getElementById('make');
+    var modelSelect = document.getElementById('model');
+    var yearSelect = document.getElementById('year');
+    var submitButton = document.getElementById('car-form-btn');
+
+    function updateSubmitButtonState() {
+        submitButton.disabled = !(makeSelect.value && modelSelect.value && yearSelect.value);
+    }
+
+    function populateModels(selectedMake) {
+        modelSelect.innerHTML = '<option value="">Select a model</option>';
+        var models = carList.filter(function (car) {
+            return car.make === selectedMake;
+        }).map(function (car) {
+            return car.model;
+        }).filter(function (value, index, self) {
+            return self.indexOf(value) === index;
+        });
+
+        models.forEach(function (model) {
+            var option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelSelect.appendChild(option);
+        });
+
+        modelSelect.disabled = false;
+    }
+
+    function populateYears(selectedModel) {
+        yearSelect.innerHTML = '<option value="">Select a year</option>';
+        var years = carList.filter(function (car) {
+            return car.model === selectedModel;
+        }).map(function (car) {
+            return car.year;
+        }).filter(function (value, index, self) {
+            return self.indexOf(value) === index;
+        });
+
+        years.forEach(function (year) {
+            var option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        });
+
+        yearSelect.disabled = false;
+    }
+
+    makeSelect.addEventListener('change', function () {
+        var selectedMake = this.value;
+        modelSelect.innerHTML = '<option value="">Select a model</option>';
+        yearSelect.innerHTML = '<option value="">Select a year</option>';
+        modelSelect.disabled = true;
+        yearSelect.disabled = true;
+        submitButton.disabled = true;
+
+        if (selectedMake) {
+            populateModels(selectedMake);
+        }
+
+        updateSubmitButtonState();
+    });
+
+    modelSelect.addEventListener('change', function () {
+        var selectedModel = this.value;
+        yearSelect.innerHTML = '<option value="">Select a year</option>';
+        yearSelect.disabled = true;
+        submitButton.disabled = true;
+
+        if (selectedModel) {
+            populateYears(selectedModel);
+        }
+
+        updateSubmitButtonState();
+    });
+
+    yearSelect.addEventListener('change', function () {
+        updateSubmitButtonState();
+    });
+
+    updateSubmitButtonState();
+});
+</script>

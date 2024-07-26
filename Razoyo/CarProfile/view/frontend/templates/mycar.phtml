@@ -1,0 +1,36 @@
+<?php
+$carDetail = $block->getData('carDetail'); // Assuming this returns a string
+$carDetails = explode('|', $carDetail); // Split the string into an array
+
+// Check if the split was successful and there are exactly 4 elements
+if (count($carDetails) === 4):
+    list($id, $make, $model, $year) = $carDetails;
+?>
+
+<div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+    <div><strong>ID:</strong> <?php echo htmlspecialchars($id); ?></div>
+    <div><strong>Make:</strong> <?php echo htmlspecialchars($make); ?></div>
+    <div><strong>Model:</strong> <?php echo htmlspecialchars($model); ?></div>
+    <div><strong>Year:</strong> <?php echo htmlspecialchars($year); ?></div>
+</div>
+<div>
+    <a href="<?php echo $block->getUrl('*/*/form'); ?>" style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Change Car</a>
+</div>
+
+<?php else:
+    list($id, $make, $model, $year, $price, $seats, $mpg, $image) = $carDetails;
+    ?>
+    <div><strong>Image:</strong> <img src="<?php $image; ?>" alt="Car Image" style="max-width: 100%; height: auto;"></div>
+    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        <div><strong>ID:</strong> <?php echo htmlspecialchars($id); ?></div>
+        <div><strong>Make:</strong> <?php echo htmlspecialchars($make); ?></div>
+        <div><strong>Model:</strong> <?php echo htmlspecialchars($model); ?></div>
+        <div><strong>Year:</strong> <?php echo htmlspecialchars($year); ?></div>
+        <div><strong>Price:</strong> <?php echo htmlspecialchars($price); ?></div>
+        <div><strong>Seats:</strong> <?php echo htmlspecialchars($seats); ?></div>
+        <div><strong>MPG:</strong> <?php echo htmlspecialchars($mpg); ?></div>
+    </div>
+    <div>
+        <a href="<?php echo $block->getUrl('*/*/form'); ?>" style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Change Car</a>
+    </div>
+<?php endif; ?>
